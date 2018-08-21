@@ -160,28 +160,6 @@ function addContact(){
 
     var modalBody = document.getElementById("remove-contact-body");
 
-    //create and populate customer drop down
-    /*var custdropdown = document.createElement("div");
-    custdropdown.className = "form-group";
-    var custlabel = document.createElement("label");
-    custlabel.setAttribute("for","rcform-select-customer");
-    custlabel.innerHTML = "Select a Customer";
-    var custselect = document.createElement("select");
-    custselect.className = "form-control";
-    custselect.setAttribute("id", "rcform-select-customer");
-
-    custdropdown.appendChild(custlabel);
-    custdropdown.appendChild(custselect);
-    modalBody.appendChild(custdropdown);
-
-    var customers = getCustomers();
-    for(var n=0; n<customers.name.length; ++n){
-        var option = document.createElement("option");
-        option.setAttribute("value", customers.id[n].innerHTML);
-        option.innerHTML = customers.name[n].innerHTML;
-        custselect.appendChild(option);
-    }*/
-
     //create and populate contact dropdown with options from API
     var contdropdown = document.createElement("div");
     contdropdown.className = "form-group";
@@ -194,10 +172,8 @@ function addContact(){
     contselect.setAttribute("id", "rcform-select-contact");
 
     var contacts = getTicketContacts(tickets[0]);
-    console.log("contacts: ");
-    console.log(contacts);
-    console.log(contacts.id.length);
-      //populate contact dropdown
+
+    //populate contact dropdown
     for(var n=0; n<contacts.id.length; ++n){
         var c = document.createElement("option");
         c.value = contacts.id[n].innerHTML;
@@ -211,20 +187,14 @@ function addContact(){
     modalBody.appendChild(contdropdown);
     console.log("created contact dropdown");
 
-    //change contacts whenever customer changes
-    /*document.getElementById('rcform-select-customer').onchange = function create() {
-        var customerID = document.getElementById('rcform-select-customer').value;
-        changeContacts(customerID);
-    }*/
-
-    // if Add Contact Save was clicked then send a post request
+    // if Add Contact Save was clicked then send a delete request
     document.getElementById('save-btn-remove-contact').onclick = function saveVersion() {
         updateContact(tickets);
     }
 }
 
 function getTicketContacts(ticket){
-  //if(ticket.length == 0) document.getElementById("rcform-select-contact").innerHTML = "<option></option>";
+  if(ticket.length == 0) document.getElementById("rcform-select-contact").innerHTML = "<option></option>";
   var queryURL = url + "Tickets/" + ticket + "/Contacts";
   xhr.open("GET", queryURL, false, orgID, token);
   xhr.send();
@@ -241,69 +211,12 @@ function getTicketContacts(ticket){
   }
 }
 
-/*function changeContacts(customerID){
-  document.getElementById("rcform-select-contact").innerHTML = "";
-  if(customerID.length == 0) document.getElementById("rcform-select-contact").innerHTML = "<option></option>";
-  else {
-    //get customer specific products from API
-    var queryURL = url + "Customers/" + customerID + "/Contacts";
-    xhr.open("GET", queryURL, false, orgID, token);
-    xhr.send();
-    var xmlDoc = parser.parseFromString(xhr.responseText,"text/xml");
-    var id = xmlDoc.getElementsByTagName("ContactID");
-    var firstName = xmlDoc.getElementsByTagName("FirstName");
-    var lastName = xmlDoc.getElementsByTagName("LastName");
-
-    //populate product dropdown
-    var conDropDown = document.getElementById("rcform-select-contact");
-     for(var i=0; i<id.length; ++i){
-       var c = document.createElement("option");
-       c.value = id[i].innerHTML;
-       c.text = firstName[i].innerHTML + " " + lastName[i].innerHTML;
-       conDropDown.options.add(c);
-    }
-  }
-}
-
-function getCustomers(){
-  //get all the customers through the API
-  var queryURL = url + "Customers";
-  xhr.open("GET", queryURL, false, orgID, token);
-  xhr.send();
-  var xmlDoc = parser.parseFromString(xhr.responseText,"text/xml");
-  var customerID = xmlDoc.getElementsByTagName("OrganizationID");
-  var customerName = xmlDoc.getElementsByTagName("Name");
-
-  return {
-    id: customerID,
-    name: customerName
-  };
-}
-
-function getContacts(customerID){
-    //get product versions and parse through xml tags
-    var versions = new Array();
-    var versionValues = new Array();
-    var URL = url + "Customers/" + customerID + "/Contacts";
-    xhr.open("GET", URL, false, orgID, token);
-    xhr.send();
-    var xmlDoc = parser.parseFromString(xhr.responseText,"text/xml");
-    var xmlVersionNames = xmlDoc.getElementsByTagName("VersionNumber");
-    var xmlVersionID = xmlDoc.getElementsByTagName("ProductVersionID");
-
-    return {
-        name: xmlVersionNames,
-        value: xmlVersionID
-    };
-}*/
-
 async function updateContact(tickets){
     var contact = document.getElementById('rcform-select-contact');
     var contactValue = contact.value;
     var len = tickets.length;
 
     //var data = '<Contact><ContactID>' + contactValue + '</ContactID></Contact>';
-
     //var xmlData = parser.parseFromString(data,"text/xml");
 
     // loop through the tickets array and update their contacts
@@ -312,7 +225,7 @@ async function updateContact(tickets){
         console.log(deleteURL);
         xhr.open("DELETE", deleteURL, false, orgID, token);
         console.log(xhr.status);
-        xhr.send(null);
+        xhr.send();
         console.log(xhr.status);
     }
 
